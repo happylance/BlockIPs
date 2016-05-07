@@ -13,7 +13,7 @@ recent_log_count=$(echo "$logs" | sed 's/.*\[\([^ ]*\).*/\1/' | sed 's_/_-_g;s/:
 [ "$recent_log_count" -eq 0 ] && { echo "$check_time: No logs in the previous $duration_in_hours hours. Done"; exit 0; }
 
 IPs=$(echo "$logs" | tail -$recent_log_count | grep -v 403 | grep xmlrpc.php | awk '{print $1}' | awk '{count[$1]++}END {for (word in count) if (count[word] > 10) print word}')
-[ -z "$IPs" ] && { echo "$check_time: No IPs needs to be blocked in recent $recent_log_count logs. Done"; exit 0; }
+[ -z "$IPs" ] && { echo "$check_time: No IPs needs to be blocked in recent $recent_log_count log$([ "$recent_log_count" -gt 1 ] && echo "s"). Done"; exit 0; }
 
 echo "$IPs" | sed 's/^/Require not ip /' | grep -vxf "$IPList_file" > $new_IPs_to_block_file
 
